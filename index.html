@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Language Translator</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Stylesheet -->
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Glowing Orbs -->
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-language"></i>
+                </div>
+                <div>
+                    <h1>LingoPulse</h1>
+                    <p class="subtitle">AI-Powered Real-Time Translator</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button id="theme-toggle" class="icon-btn" title="Toggle Theme">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Translation Card -->
+        <main class="translator-card">
+            <!-- Language Selection Bar -->
+            <div class="lang-selector-bar">
+                <div class="select-wrapper">
+                    <i class="fa-solid fa-globe select-icon"></i>
+                    <select id="source-lang" aria-label="Source Language">
+                        <!-- Populated by JavaScript -->
+                    </select>
+                </div>
+
+                <button id="swap-langs" class="swap-btn" title="Swap Languages">
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                </button>
+
+                <div class="select-wrapper">
+                    <i class="fa-solid fa-globe select-icon"></i>
+                    <select id="target-lang" aria-label="Target Language">
+                        <!-- Populated by JavaScript -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Editor Workspaces -->
+            <div class="editor-grid">
+                <!-- Source Area -->
+                <div class="editor-panel source-panel">
+                    <textarea id="source-text" placeholder="Type, paste, or speak text here..." maxlength="5000"></textarea>
+                    
+                    <button id="clear-text" class="clear-btn" title="Clear text">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+
+                    <!-- Speech Recognition Audio Wave visualizer -->
+                    <div id="voice-wave-container" class="voice-wave-overlay hidden">
+                        <div class="wave-bars">
+                            <span class="bar"></span>
+                            <span class="bar"></span>
+                            <span class="bar"></span>
+                            <span class="bar"></span>
+                            <span class="bar"></span>
+                        </div>
+                        <span class="voice-status">Listening... Speak now</span>
+                    </div>
+
+                    <!-- Text Analytics Bar -->
+                    <div class="analytics-bar">
+                        <span><i class="fa-solid fa-file-word"></i> <strong id="word-count">0</strong> words</span>
+                        <span><i class="fa-solid fa-font"></i> <strong id="sentence-count">0</strong> sentences</span>
+                        <span><i class="fa-solid fa-clock"></i> <strong id="reading-time">0</strong>s read time</span>
+                    </div>
+
+                    <div class="panel-footer">
+                        <div class="footer-tools">
+                            <button id="src-voice-btn" class="tool-btn speech-recognition-btn" title="Voice Input (Speech-to-Text)">
+                                <i class="fa-solid fa-microphone"></i>
+                            </button>
+                            <button id="src-speak-btn" class="tool-btn speak-toggle-btn" title="Listen (Text-to-Speech)" disabled>
+                                <i class="fa-solid fa-volume-high"></i>
+                            </button>
+                            <button id="src-copy-btn" class="tool-btn" title="Copy text">
+                                <i class="fa-solid fa-copy"></i>
+                            </button>
+                        </div>
+                        <span class="char-counter"><span id="char-count">0</span> / 5000</span>
+                    </div>
+                </div>
+
+                <!-- Target Area -->
+                <div class="editor-panel target-panel">
+                    <!-- Textarea is disabled for writing but selectable/scrollable -->
+                    <textarea id="target-text" placeholder="Translation will appear here..." readonly></textarea>
+                    
+                    <!-- Loading overlay / spinner -->
+                    <div id="loader" class="loader-overlay hidden">
+                        <div class="spinner"></div>
+                        <span>Translating...</span>
+                    </div>
+
+                    <!-- Alternative Translations Container -->
+                    <div id="alternatives-container" class="alternatives-container hidden">
+                        <span class="alt-label">Alternative Translations</span>
+                        <div id="alternatives-list" class="alternatives-list">
+                            <!-- Populated dynamically by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="panel-footer">
+                        <div class="footer-tools">
+                            <button id="tgt-speak-btn" class="tool-btn speak-toggle-btn" title="Listen Translation (Text-to-Speech)" disabled>
+                                <i class="fa-solid fa-volume-high"></i>
+                            </button>
+                            <button id="tgt-copy-btn" class="tool-btn" title="Copy Translation">
+                                <i class="fa-solid fa-copy"></i>
+                            </button>
+                            <button id="pin-translation-btn" class="tool-btn" title="Pin to Phrasebook" disabled>
+                                <i class="fa-regular fa-star"></i>
+                            </button>
+                            <button id="download-btn" class="tool-btn" title="Download Translation" disabled>
+                                <i class="fa-solid fa-file-arrow-down"></i>
+                            </button>
+                            <button id="share-btn" class="tool-btn" title="Share Translation Link">
+                                <i class="fa-solid fa-share-nodes"></i>
+                            </button>
+                        </div>
+                        <div class="status-indicator">
+                            <span id="translation-status">Ready</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Translate Action Trigger Bar -->
+            <div class="action-bar">
+                <div class="toggle-container">
+                    <label class="switch">
+                        <input type="checkbox" id="auto-translate-toggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="toggle-label">Auto-Translate</span>
+                </div>
+
+                <div class="engine-container">
+                    <label for="translation-engine" class="engine-label">Engine:</label>
+                    <div class="select-wrapper engine-select-wrapper">
+                        <i class="fa-solid fa-server select-icon engine-select-icon"></i>
+                        <select id="translation-engine" aria-label="Translation Engine">
+                            <option value="google" selected>Google Neural NMT</option>
+                            <option value="mymemory">MyMemory TM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button id="translate-btn" class="primary-btn">
+                    <span>Translate Now</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </main>
+
+        <!-- History and Phrasebook Row -->
+        <div class="history-phrasebook-grid">
+            <!-- Translation History Section -->
+            <section class="history-section card-glass">
+                <div class="history-header">
+                    <h2>
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <span>Recent Translations</span>
+                    </h2>
+                    <button id="clear-history-btn" class="text-btn" title="Clear All History">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span>Clear All</span>
+                    </button>
+                </div>
+                <div id="history-list" class="history-list">
+                    <!-- Populated by JavaScript -->
+                    <div class="history-empty">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <p>Your translation history is empty. Start translating to see records here!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Phrasebook / Pinned Translations Section -->
+            <section class="phrasebook-section card-glass">
+                <div class="history-header">
+                    <h2>
+                        <i class="fa-solid fa-star"></i>
+                        <span>Phrasebook (Pinned)</span>
+                    </h2>
+                    <button id="clear-phrasebook-btn" class="text-btn" title="Clear Phrasebook">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span>Clear All</span>
+                    </button>
+                </div>
+                <div id="phrasebook-list" class="history-list">
+                    <!-- Populated by JavaScript -->
+                    <div class="phrasebook-empty">
+                        <i class="fa-solid fa-star"></i>
+                        <p>Your phrasebook is empty. Pin translations to save them here!</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="app-footer-info">
+            <p>&copy; 2026 LingoPulse. Built with Vanilla CSS, JS &amp; MyMemory Translation API.</p>
+        </footer>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+        <i class="fa-solid fa-check-circle toast-icon"></i>
+        <span id="toast-message">Copied to clipboard!</span>
+    </div>
+
+    <!-- Main Logic Script -->
+    <script src="app.js"></script>
+</body>
+</html>
